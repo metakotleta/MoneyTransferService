@@ -14,7 +14,6 @@ public class Response {
 
     private Operation operation;
     private String message;
-    private String reason;
 
     public Response(Operation operation) {
         this.operation = operation;

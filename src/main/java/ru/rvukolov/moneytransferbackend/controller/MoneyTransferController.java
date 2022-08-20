@@ -3,7 +3,7 @@ package ru.rvukolov.moneytransferbackend.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.rvukolov.moneytransferbackend.exceptions.CardNotFoundException;
+import ru.rvukolov.moneytransferbackend.exceptions.CardException;
 import ru.rvukolov.moneytransferbackend.exceptions.UserAlreadyRegisteredException;
 import ru.rvukolov.moneytransferbackend.model.*;
 import ru.rvukolov.moneytransferbackend.model.out.FailResponse;
@@ -22,8 +22,7 @@ public class MoneyTransferController {
     }
     @PostMapping("/transfer")
     public Operation transfer(@RequestBody TransferRequest request) {
-        var oper = moneyTransferService.transfer(request);
-        return oper;
+        return moneyTransferService.transfer(request);
     }
 
     @PostMapping("/confirmOperation")
@@ -31,8 +30,8 @@ public class MoneyTransferController {
 
     }
 
-    @ExceptionHandler(CardNotFoundException.class)
-    ResponseEntity<Response> handleCardNotFoundException(CardNotFoundException e) {
+    @ExceptionHandler(CardException.class)
+    ResponseEntity<Response> handleCardNotFoundException(CardException e) {
         return ResponseEntity.status(400).body(new FailResponse(e, e.getOperation()));
     }
 

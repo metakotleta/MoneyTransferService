@@ -1,6 +1,7 @@
 package ru.rvukolov.moneytransferbackend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Setter;
 
 public class Card {
@@ -18,6 +19,7 @@ public class Card {
         this.name = name;
         this.surname = surname;
     }
+
 
     public String getCardId() {
         return cardId;

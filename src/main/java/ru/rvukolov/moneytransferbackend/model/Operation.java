@@ -36,8 +36,8 @@ public class Operation {
         return this;
     }
 
-    public Operation setOperationId() {
-        this.operationId = Generators.timeBasedGenerator().generate();
+    public Operation setRequest(TransferRequest request) {
+        this.request = request;
         return this;
     }
 }

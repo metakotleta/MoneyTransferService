@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.rvukolov.moneytransferbackend.model.Operation;
 import ru.rvukolov.moneytransferbackend.repository.OperationsRepository;
 
+import java.util.Comparator;
 import java.util.List;
 @Service
 public class OperationsService {
@@ -15,6 +16,8 @@ public class OperationsService {
     }
 
     public List<Operation> getOperations() {
-        return operationsRepository.getOperations().values().stream().toList();
+        return operationsRepository.getOperations().values().stream()
+                .sorted(Comparator.comparing(Operation::getOperationId))
+                .toList();
     }
 }

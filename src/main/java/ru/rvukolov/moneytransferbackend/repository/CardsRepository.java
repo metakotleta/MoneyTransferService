@@ -1,7 +1,7 @@
 package ru.rvukolov.moneytransferbackend.repository;
 
 import org.springframework.stereotype.Repository;
-import ru.rvukolov.moneytransferbackend.exceptions.CardNotFoundException;
+import ru.rvukolov.moneytransferbackend.exceptions.CardException;
 import ru.rvukolov.moneytransferbackend.exceptions.UserAlreadyRegisteredException;
 import ru.rvukolov.moneytransferbackend.model.*;
 
@@ -26,16 +26,24 @@ public class CardsRepository {
     }
 
     public Operation addBalance(String cardId, double amount) {
-        Card card = cards.get(cardId);
-        card.addBalance(amount);
-        Operation operation = new Operation(OperationTypes.ADD_BALANCE, card).setOperationStatus(OperationStatuses.SUCCESS);
-        return operation;
+        if (cards.containsKey(cardId)) {
+            Card card = cards.get(cardId);
+            card.addBalance(amount);
+            return new Operation(OperationTypes.ADD_BALANCE, card).setOperationStatus(OperationStatuses.SUCCESS);
+        } else {
+            Operation operation = new Operation(OperationTypes.ADD_BALANCE).setOperationStatus(OperationStatuses.FAIL);
+            throw new CardException("Card not found", cardId, operation);
+        }
     }
 
     public Operation getCardById(String cardId) {
-        Card card = cards.get(cardId);
-        Operation operation = new Operation(OperationTypes.GET_CARD, card).setOperationStatus(OperationStatuses.SUCCESS);
-        return operation;
+        if (cards.containsKey(cardId)) {
+            Card card = cards.get(cardId);
+            return new Operation(OperationTypes.GET_CARD, card).setOperationStatus(OperationStatuses.SUCCESS);
+        } else {
+            Operation operation = new Operation(OperationTypes.GET_CARD).setOperationStatus(OperationStatuses.FAIL);
+            throw new CardException("Card not found", cardId, operation);
+        }
     }
 
     public Operation transfer(TransferRequest request) {
@@ -46,17 +54,19 @@ public class CardsRepository {
         if (checkSenderCard(senderCard,request)) {
             senderCard.spendBalance(amount);
             receiverCard.addBalance(amount);
+            operation.setOperationStatus(OperationStatuses.SUCCESS).setRequest(request);
         } else {
-
+            operation.setOperationStatus(OperationStatuses.FAIL).setRequest(request);
+            throw new CardException("Incorrect card data", request.getCardFromNumber(), operation);
         }
-        return operation.setOperationStatus(OperationStatuses.SUCCESS);
+        return operation;
     }
 
     private Card checkCardExists(String cardId, Operation operation) {
         if (cards.containsKey(cardId)) {
             return cards.get(cardId);
         } else {
-            throw new CardNotFoundException("Card was not found", cardId, operation.setOperationStatus(OperationStatuses.FAIL));
+            throw new CardException("Card was not found", cardId, operation.setOperationStatus(OperationStatuses.FAIL));
         }
     }
 

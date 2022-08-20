@@ -1,6 +1,7 @@
 package ru.rvukolov.moneytransferbackend.service;
 
 import org.springframework.stereotype.Service;
+import ru.rvukolov.moneytransferbackend.exceptions.CardException;
 import ru.rvukolov.moneytransferbackend.exceptions.UserAlreadyRegisteredException;
 import ru.rvukolov.moneytransferbackend.model.Amount;
 import ru.rvukolov.moneytransferbackend.model.Card;
@@ -20,9 +21,14 @@ public class CardsService {
     }
 
     public Operation getCardById(String cardId) {
-        var operation = cardsRepository.getCardById(cardId);
-        operationsRepository.getOperations().put(operation.getOperationId(), operation);
-        return operation;
+        try {
+            var operation = cardsRepository.getCardById(cardId);
+            operationsRepository.getOperations().put(operation.getOperationId(), operation);
+            return operation;
+        } catch (CardException e) {
+            operationsRepository.getOperations().put(e.getOperation().getOperationId(), e.getOperation());
+            throw e;
+        }
     }
 
     public Operation addCard(Card card) {
@@ -37,9 +43,14 @@ public class CardsService {
     }
 
     public Operation addBalance(String cardNumber, Amount amount) {
-        var operation = cardsRepository.addBalance(cardNumber, amount.getValue());
-        operationsRepository.getOperations().put(operation.getOperationId(), operation);
-        return operation;
+        try {
+            var operation = cardsRepository.addBalance(cardNumber, amount.getValue());
+            operationsRepository.getOperations().put(operation.getOperationId(), operation);
+            return operation;
+        } catch (CardException e) {
+            operationsRepository.getOperations().put(e.getOperation().getOperationId(), e.getOperation());
+            throw e;
+        }
 
     }
 }
