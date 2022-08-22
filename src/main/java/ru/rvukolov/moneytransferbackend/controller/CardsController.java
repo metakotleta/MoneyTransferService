@@ -23,6 +23,8 @@ public class CardsController {
         this.cardsService = cardsService;
     }
 
+    //TODO: Получение списка всех карт
+
     @GetMapping("/{cardId}")
     public Response getCardById(@PathVariable String cardId) {
         var operation = cardsService.getCardById(cardId);

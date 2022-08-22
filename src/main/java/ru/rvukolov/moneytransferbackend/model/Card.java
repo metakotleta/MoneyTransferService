@@ -1,12 +1,14 @@
 package ru.rvukolov.moneytransferbackend.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Setter;
 
 public class Card {
     private String cardId;
     private String validTill;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String cardCVV;
     private String name;
     private String surname;
