@@ -1,12 +1,10 @@
 package ru.rvukolov.moneytransferbackend.controller;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.rvukolov.moneytransferbackend.exceptions.CardException;
-import ru.rvukolov.moneytransferbackend.exceptions.UserAlreadyRegisteredException;
-import ru.rvukolov.moneytransferbackend.model.*;
-import ru.rvukolov.moneytransferbackend.model.out.FailResponse;
+import ru.rvukolov.moneytransferbackend.exceptions.AApplicationException;
+import ru.rvukolov.moneytransferbackend.model.Operation;
+import ru.rvukolov.moneytransferbackend.model.TransferRequest;
 import ru.rvukolov.moneytransferbackend.model.out.Response;
 import ru.rvukolov.moneytransferbackend.service.MoneyTransferService;
 
@@ -30,10 +28,9 @@ public class MoneyTransferController {
 
     }
 
-    @ExceptionHandler(CardException.class)
-    ResponseEntity<Response> handleCardNotFoundException(CardException e) {
-        return ResponseEntity.status(400).body(new FailResponse(e, e.getOperation()));
+    @ExceptionHandler(AApplicationException.class)
+    Response handleCardException(AApplicationException e, HttpServletResponse response) {
+        response.setStatus(e.getStatus().value());
+        return e.getResponse();
     }
-
-
 }

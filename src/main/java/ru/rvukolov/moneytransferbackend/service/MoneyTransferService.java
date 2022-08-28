@@ -1,9 +1,9 @@
 package ru.rvukolov.moneytransferbackend.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.rvukolov.moneytransferbackend.exceptions.CardException;
-import ru.rvukolov.moneytransferbackend.model.Operation;
-import ru.rvukolov.moneytransferbackend.model.TransferRequest;
+import ru.rvukolov.moneytransferbackend.model.*;
 import ru.rvukolov.moneytransferbackend.repository.CardsRepository;
 import ru.rvukolov.moneytransferbackend.repository.OperationsRepository;
 
@@ -19,12 +19,21 @@ public class MoneyTransferService {
     }
 
     public Operation transfer(TransferRequest request) {
-        try {
-            return cardsRepository.transfer(request);
-        } catch (CardException e) {
-            operationsRepository.getOperations().put(e.getOperation().getOperationId(), e.getOperation());
-            throw e;
+        Operation operation = new Operation(OperationTypes.TRANSFER);
+        Card senderCard = cardsRepository.checkCardExists(request.getCardFromNumber(), operation);
+        Card receiverCard = cardsRepository.checkCardExists(request.getCardToNumber(), operation);
+        double amount = request.getAmount().getValue();
+        if (cardsRepository.checkSenderCard(senderCard,request)) {
+            senderCard.spendBalance(amount);
+            receiverCard.addBalance(amount);
+            operation.setOperationStatus(OperationStatuses.SUCCESS).setRequest(request);
+            operationsRepository.addOperation(operation);
+        } else {
+            operation.setOperationStatus(OperationStatuses.FAIL).setRequest(request);
+            operationsRepository.addOperation(operation);
+            throw new CardException("Incorrect card data:" + request.getCardFromNumber(), operation, HttpStatus.NOT_FOUND);
         }
+        return operation;
     }
 
 }

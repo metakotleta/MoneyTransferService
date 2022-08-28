@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Operation {
+public class Operation implements Comparable<Operation>{
     private UUID operationId;
     private OperationTypes operationType;
     private OperationStatuses operationStatus;
@@ -39,5 +39,11 @@ public class Operation {
     public Operation setRequest(TransferRequest request) {
         this.request = request;
         return this;
+    }
+
+
+    @Override
+    public int compareTo(Operation o) {
+        return this.operationId.compareTo(o.operationId);
     }
 }

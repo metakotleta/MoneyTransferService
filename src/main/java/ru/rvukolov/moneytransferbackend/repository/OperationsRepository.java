@@ -16,4 +16,8 @@ public class OperationsRepository {
 
     private Map<UUID, Operation> operations = new ConcurrentHashMap<>();
 
+    public void addOperation(Operation operation) {
+        operations.put(operation.getOperationId(), operation);
+    }
+
 }
