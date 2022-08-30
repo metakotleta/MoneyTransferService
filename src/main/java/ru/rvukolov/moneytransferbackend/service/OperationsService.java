@@ -21,4 +21,8 @@ public class OperationsService {
                 .sorted(Comparator.reverseOrder())
                 .toList();
     }
+
+    public void addOperation(Operation operation) {
+        operationsRepository.addOperation(operation);
+    }
 }

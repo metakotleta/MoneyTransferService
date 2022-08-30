@@ -5,11 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 public class Card {
+    @Size(min = 16)
     private String cardId;
     private String validTill;
+    @Size(min = 3, max = 3)
     private String cardCVV;
+    @NotBlank
     private String name;
+    @NotBlank
     private String surname;
     private double balance;
 
