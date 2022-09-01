@@ -2,6 +2,8 @@ package ru.rvukolov.moneytransferbackend.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.rvukolov.moneytransferbackend.exceptions.AApplicationException;
@@ -45,6 +47,7 @@ public class CardsController {
         return new Response(operation).setCardId(card.getCardId());
     }
 
+    @Scope("prototype")
     @PostMapping("/{cardId}/topUp")
     public Response topUpBalance(@PathVariable String cardId, @RequestBody @Valid Amount amount) {
         var operation = cardsService.addBalance(cardId, amount);

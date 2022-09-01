@@ -23,7 +23,7 @@ public class CardsService {
     }
 
     public Operation getCardById(String cardId) {
-     //   log.info("Getting card by id, requsted card: {}", cardId);
+        //   log.info("Getting card by id, requsted card: {}", cardId);
         Operation operation;
         if (cardsRepository.hasCard(cardId)) {
             Card card = cardsRepository.getCardById(cardId);

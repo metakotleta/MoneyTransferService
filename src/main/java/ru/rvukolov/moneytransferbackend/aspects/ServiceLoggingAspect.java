@@ -21,6 +21,9 @@ public class ServiceLoggingAspect {
 
     private ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
 
+    /**
+     * Next three advices is for CardsService methods.
+     */
     @Before("execution(public * ru.rvukolov.moneytransferbackend.service.CardsService.*(..))")
     public void beforeAddCardAdvice(JoinPoint joinPoint) {
         var method = joinPoint.getSignature().getName();
@@ -61,4 +64,11 @@ public class ServiceLoggingAspect {
             log.error("Exception while logging", e);
         }
     }
+
+    /**
+     * Next three advices is for MoneyTransferService methods.
+     */
+  // @Before("executing(public )")
+
+
 }
