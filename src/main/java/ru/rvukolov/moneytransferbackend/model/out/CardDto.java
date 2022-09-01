@@ -12,19 +12,17 @@ import ru.rvukolov.moneytransferbackend.model.Card;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CardDto {
-    private String cardId;
-    private String validTill;
-    private String name;
-    private String surname;
-
-    public CardDto(String cardId) {
-        this.cardId = cardId;
-    }
+    private final String cardId;
+    private final String validTill;
+    private final String name;
+    private final String surname;
+    private final double balance;
 
     public CardDto(Card card) {
         this.cardId = card.getCardId();
         this.validTill = card.getValidTill();
         this.name = card.getName();
         this.surname = card.getSurname();
+        this.balance = card.getBalance();
     }
 }

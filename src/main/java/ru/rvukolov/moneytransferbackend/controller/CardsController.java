@@ -37,7 +37,7 @@ public class CardsController {
     @GetMapping("/{cardId}")
     public Response getCardById(@PathVariable String cardId) {
         var operation = cardsService.getCardById(cardId);
-        var cardDto = new CardDto(operation.getCard());
+        var cardDto = operation.getCard();
         return new Response(operation).setCardDto(cardDto);
     }
 
@@ -51,7 +51,7 @@ public class CardsController {
     @PostMapping("/{cardId}/topUp")
     public Response topUpBalance(@PathVariable String cardId, @RequestBody @Valid Amount amount) {
         var operation = cardsService.addBalance(cardId, amount);
-        var cardDto = new CardDto(operation.getCard().getCardId());
+        var cardDto = operation.getCard();
         return new Response(operation).setCardDto(cardDto);
     }
 

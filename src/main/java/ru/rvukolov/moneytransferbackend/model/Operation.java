@@ -5,6 +5,7 @@ import com.fasterxml.uuid.Generators;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.rvukolov.moneytransferbackend.model.out.CardDto;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ public class Operation implements Comparable<Operation>{
     private OperationTypes operationType;
     private OperationStatuses operationStatus;
     private TransferRequest request;
-    private Card card;
+    private CardDto card;
     private Instant operationTime;
 
     public Operation(OperationTypes operationType) {
@@ -31,7 +32,7 @@ public class Operation implements Comparable<Operation>{
     public Operation(OperationTypes operationType, Card card) {
         this.operationId = Generators.timeBasedGenerator().generate();
         this.operationType = operationType;
-        this.card = card;
+        this.card = new CardDto(card);
         this.operationTime = Instant.now();
     }
     public Operation setOperationStatus(OperationStatuses operationStatus) {

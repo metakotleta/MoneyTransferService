@@ -30,8 +30,8 @@ public class CardsRepository {
         return cards.containsKey(cardId);
     }
 
-    public void addBalance(Card card, double amount) {
-        card.addBalance(amount);
+    public void addBalance(String cardId, double amount) {
+        cards.get(cardId).addBalance(amount);
     }
 
     public Card checkCardExists(String cardId, Operation operation) {
