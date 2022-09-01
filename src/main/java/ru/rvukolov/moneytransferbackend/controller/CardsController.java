@@ -34,7 +34,6 @@ public class CardsController {
 
     @GetMapping("/{cardId}")
     public Response getCardById(@PathVariable String cardId) {
-        log.debug("Getting card by id, requsted card: {}", cardId);
         var operation = cardsService.getCardById(cardId);
         var cardDto = new CardDto(operation.getCard());
         return new Response(operation).setCardDto(cardDto);

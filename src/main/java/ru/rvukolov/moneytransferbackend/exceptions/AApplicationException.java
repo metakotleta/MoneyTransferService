@@ -9,6 +9,7 @@ public abstract class AApplicationException extends RuntimeException {
     private HttpStatus status;
 
     public AApplicationException(String message, Operation operation, HttpStatus status) {
+        super(message);
         response = new Response(operation).setMessage(message);
         this.status = status;
     }

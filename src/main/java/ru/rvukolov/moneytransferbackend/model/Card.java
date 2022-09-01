@@ -36,7 +36,7 @@ public class Card {
     public String getValidTill() {
         return validTill;
     }
-
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String getCardCVV() {
         return cardCVV;
     }

@@ -1,5 +1,7 @@
 package ru.rvukolov.moneytransferbackend.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.rvukolov.moneytransferbackend.exceptions.CardException;
@@ -11,6 +13,7 @@ import ru.rvukolov.moneytransferbackend.repository.OperationsRepository;
 @Service
 public class CardsService {
 
+    private static Logger log = LoggerFactory.getLogger(CardsService.class);
     private OperationsRepository operationsRepository;
     private CardsRepository cardsRepository;
 
@@ -20,6 +23,7 @@ public class CardsService {
     }
 
     public Operation getCardById(String cardId) {
+     //   log.info("Getting card by id, requsted card: {}", cardId);
         Operation operation;
         if (cardsRepository.hasCard(cardId)) {
             Card card = cardsRepository.getCardById(cardId);

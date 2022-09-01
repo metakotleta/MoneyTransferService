@@ -9,12 +9,12 @@ import ru.rvukolov.moneytransferbackend.model.OperationStatuses;
 import ru.rvukolov.moneytransferbackend.model.OperationTypes;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Accessors(chain = true)
 @Getter
 @Setter
-//@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Response {
     private final UUID operationId;
