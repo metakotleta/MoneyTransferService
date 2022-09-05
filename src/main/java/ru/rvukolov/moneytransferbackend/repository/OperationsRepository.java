@@ -20,4 +20,11 @@ public class OperationsRepository {
         operations.put(operation.getOperationId(), operation);
     }
 
+    public Operation getOperationById(UUID id) {
+        return operations.get(id);
+    }
+
+    public boolean containOperation(UUID id) {
+        return operations.containsKey(id);
+    }
 }

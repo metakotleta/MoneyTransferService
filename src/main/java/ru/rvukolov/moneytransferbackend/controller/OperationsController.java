@@ -22,6 +22,6 @@ public class OperationsController {
 
     @GetMapping
     public List<Response> getOperations() {
-        return operationsService.getOperations().stream().map(Response::new).collect(Collectors.toList());
+        return operationsService.getOperations().stream().map(o -> new Response(o, o.getCard())).collect(Collectors.toList());
     }
 }

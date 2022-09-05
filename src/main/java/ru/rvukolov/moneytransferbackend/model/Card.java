@@ -7,6 +7,9 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Card {
     @Size(min = 16)
@@ -19,6 +22,7 @@ public class Card {
     @NotBlank
     private String surname;
     private double balance;
+    private Map<UUID, Double> reservedBalance = new ConcurrentHashMap<>();
 
     public Card(String cardId, String validTill, String cardCVV, String name, String surname) {
         this.cardId = cardId;
@@ -58,6 +62,14 @@ public class Card {
     }
     public void spendBalance(double balance) {
         this.balance -= balance;
+    }
+
+    public Map<UUID, Double> getReservedBalance() {
+        return reservedBalance;
+    }
+
+    public void reserveSpendBalance(UUID operationId, double amount) {
+        this.reservedBalance.put(operationId, amount);
     }
 
 }

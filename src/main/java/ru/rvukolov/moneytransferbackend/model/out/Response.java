@@ -20,10 +20,11 @@ public class Response {
     private final UUID operationId;
     private final OperationTypes operationType;
     private final OperationStatuses operationStatus;
-    private final Instant operationTime;
+    private Instant operationTime;
     private ValidationError validationError;
+    private CardDto card;
+
     private String cardId;
-    private CardDto cardDto;
     private String message;
 
     public Response(Operation operation) {
@@ -31,6 +32,20 @@ public class Response {
         this.operationType = operation.getOperationType();
         this.operationStatus = operation.getOperationStatus();
         this.operationTime = operation.getOperationTime();
+    }
+
+    public Response(Operation operation, CardDto card) {
+        this.operationId = operation.getOperationId();
+        this.operationType = operation.getOperationType();
+        this.operationStatus = operation.getOperationStatus();
+        this.operationTime = operation.getOperationTime();
+        this.card = card;
+    }
+
+    public Response(UUID operationId, OperationTypes operationType, OperationStatuses operationStatus) {
+        this.operationId = operationId;
+        this.operationType = operationType;
+        this.operationStatus = operationStatus;
     }
 }
 

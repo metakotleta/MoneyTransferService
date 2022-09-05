@@ -38,7 +38,7 @@ public class CardsController {
     public Response getCardById(@PathVariable String cardId) {
         var operation = cardsService.getCardById(cardId);
         var cardDto = operation.getCard();
-        return new Response(operation).setCardDto(cardDto);
+        return new Response(operation, cardDto);
     }
 
     @PostMapping("/register")
@@ -47,12 +47,11 @@ public class CardsController {
         return new Response(operation).setCardId(card.getCardId());
     }
 
-    @Scope("prototype")
     @PostMapping("/{cardId}/topUp")
     public Response topUpBalance(@PathVariable String cardId, @RequestBody @Valid Amount amount) {
         var operation = cardsService.addBalance(cardId, amount);
         var cardDto = operation.getCard();
-        return new Response(operation).setCardDto(cardDto);
+        return new Response(operation, cardDto);
     }
 
     @ExceptionHandler(AApplicationException.class)
@@ -62,7 +61,7 @@ public class CardsController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    Response handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletResponse response) {
+    Response handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         var operation = new Operation(OperationTypes.ERROR);
         operationsService.addOperation(operation);
         var error = new ValidationError()

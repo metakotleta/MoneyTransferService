@@ -10,7 +10,6 @@ import ru.rvukolov.moneytransferbackend.repository.OperationsRepository;
 
 @Service
 public class CardsService {
-
     private final OperationsRepository operationsRepository;
     private final CardsRepository cardsRepository;
 
