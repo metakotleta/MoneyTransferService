@@ -36,6 +36,7 @@ public class MoneyTransferService {
     }
 
     public Operation confirmOperation(Confirm confirm) {
+        //TODO: добавить ДТО для корректной передачи в /operations (менять статус и тип исходной операции
         var operation = new ConfirmOperation(OperationTypes.TRANSFER_CONFIRM);
         if (operationsRepository.containOperation(confirm.getOperationId())) {
             Operation transferOperation = operationsRepository.getOperationById(confirm.getOperationId());
