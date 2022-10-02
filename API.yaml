@@ -1,0 +1,451 @@
+openapi: 3.0.0
+info:
+  title: Transfer Money API
+  description: Transfer Money API
+  version: 1.0.0
+servers:
+  - url: http://localhost:5500
+    description: local server
+tags:
+  - name: Cards
+    description: Actions with cards
+  - name: Money Transfer
+    description: Methods for money transfering
+paths:
+  /cards/register:
+    post:
+      tags: [Cards]
+      summary: Register card in system
+      description: Call to register card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardId:
+                  type: number
+                validTill:
+                  type: string
+                cardCVV:
+                  type: number
+                name:
+                  type: string
+                surname:
+                  type: string
+      responses:
+        '200':
+          description: Success registration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operation:
+                    type: object
+                    properties:
+                      operationId: 
+                        type: string
+                      operationType:
+                        type: string
+                      operationStatus: 
+                        type: string
+                  card:
+                    type: object
+                    properties:
+                      cardId: 
+                        type: string
+                      validTill:
+                        type: string
+                      name:
+                        type: string
+                      surname:
+                        type: string
+                      balance:
+                        type: number
+                  operationTime: 
+                    type: string
+        '500':
+          description: Argument validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                  operationType: 
+                    type: string
+                  operationTime:
+                    type: string
+                  validationError:
+                    type: object
+                    properties:
+                      errorMethodNames:
+                        type: array
+                        items:
+                          type: string
+                      invalidFields:
+                        type: array
+                        items:
+                          type: string
+        '422':
+          description: Card register error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                  operationType: 
+                    type: string
+                  operationStatus:
+                    type: string
+                  operationTime:
+                    type: string
+                  message:
+                    type: string
+  /cards/{id}:
+    get:
+      tags: [Cards]
+      summary: Get card information
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The card number
+      responses:
+        '200':
+          description: Success registration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                  operationType: 
+                    type: string
+                  operationStatus:
+                    type: string
+                  operationTime:
+                    type: string
+                  card: 
+                    type: object
+                    properties:
+                      cardId: 
+                        type: string
+                      validTill:
+                        type: string
+                      name:
+                        type: string
+                      surname:
+                        type: string
+                      balance:
+                        type: number
+        '404':
+          description: Card not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                  operationType: 
+                    type: string
+                  operationStatus:
+                    type: string
+                  operationTime:
+                    type: string
+                  message:
+                    type: string
+  /cards/{id}/topUp:
+    post:
+      tags: [Cards]
+      summary: Get card information
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: The card number   
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                value:
+                  type: integer
+      responses:
+        '200':
+          description: Success registration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                  operationType: 
+                    type: string
+                  operationStatus:
+                    type: string
+                  operationTime:
+                    type: string
+                  card: 
+                    type: object
+                    properties:
+                      cardId: 
+                        type: string
+                      validTill:
+                        type: string
+                      name:
+                        type: string
+                      surname:
+                        type: string
+                      balance:
+                        type: number
+        '404':
+          description: Card not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                  operationType: 
+                    type: string
+                  operationStatus:
+                    type: string
+                  operationTime:
+                    type: string
+                  message:
+                    type: string
+        '500':
+          description: Argument validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                  operationType: 
+                    type: string
+                  operationTime:
+                    type: string
+                  validationError:
+                    type: object
+                    properties:
+                      errorMethodNames:
+                        type: array
+                        items:
+                          type: string
+                      invalidFields:
+                        type: array
+                        items:
+                          type: string
+
+
+  /transfer:
+    post:
+      tags: [Money Transfer]
+      summary: Transfer money card to card
+      description: Call to send money between cards
+      requestBody:
+        description: Card from and card to
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cardFromNumber:
+                  type: string
+                cardFromValidTill:
+                  type: string
+                cardFromCVV:
+                  type: string
+                cardToNumber:
+                  type: string
+                amount:
+                  type: object
+                  properties:
+                    value:
+                      type: integer
+                    currency:
+                      type: string
+      responses:
+        '200':
+          description: Success transfer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                  operationType: 
+                    type: string
+                  operationStatus:
+                    type: string
+                  request:
+                    type: object
+                    properties:
+                      cardFromNumber:
+                        type: string
+                      cardFromValidTill:
+                        type: string
+                      cardToNumber:
+                        type: string
+                      amount:
+                        type: object
+                        properties:
+                          value:
+                            type: integer
+                          currency:
+                            type: string
+                  operationTime: 
+                    type: string
+        '404':
+          description: Card not found or card data incorrect
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                  operationType: 
+                    type: string
+                  operationStatus:
+                    type: string
+                  operationTime:
+                    type: string
+                  message:
+                    type: string
+        '500':
+          description: Argument validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                  operationType: 
+                    type: string
+                  operationTime:
+                    type: string
+                  validationError:
+                    type: object
+                    properties:
+                      errorMethodNames:
+                        type: array
+                        items:
+                          type: string
+                      invalidFields:
+                        type: array
+                        items:
+                          type: string
+  /confirmOperation:
+    post:
+      tags: [Money Transfer]
+      summary: Confirm operation
+      description: Confirming operataion with code
+      requestBody:
+        description: Confirm operation
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                operationId:
+                  type: string
+                  description: Operation id
+                code:
+                  type: string
+                  description: Verification code
+      responses:
+        '200':
+          description: Success confirmation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                  operationType: 
+                    type: string
+                  operationStatus:
+                    type: string
+                  operationTime:
+                    type: string
+        '404':
+          description: Operation not found all already confirmed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                  operationType: 
+                    type: string
+                  operationStatus:
+                    type: string
+                  operationTime:
+                    type: string
+                  message:
+                    type: string
+        '500':
+          description: Invalid confirmation code
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operationId:
+                    type: string
+                  operationType: 
+                    type: string
+                  operationStatus:
+                    type: string
+                  operationTime:
+                    type: string
+                  message:
+                    type: string
+  /operations:
+    get:
+      tags: [Operations]
+      summary: Get all operations
+      description: Get all operations from application start. Returns empty array if there are no operations.
+      responses:
+        "200":
+          description: Success confirmation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    operationId:
+                      type: string
+                    operationType: 
+                      type: string
+                    operationStatus:
+                      type: string
+                    operationTime:
+                      type: string
