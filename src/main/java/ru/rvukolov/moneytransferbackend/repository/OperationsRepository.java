@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.rvukolov.moneytransferbackend.model.Operation;
+import ru.rvukolov.moneytransferbackend.model.OperationStatuses;
 
 import java.util.Map;
 import java.util.UUID;
@@ -26,5 +27,9 @@ public class OperationsRepository {
 
     public boolean containOperation(UUID id) {
         return operations.containsKey(id);
+    }
+
+    public boolean isNotConfirmedOperation(UUID id) {
+        return operations.get(id).getOperationStatus() != OperationStatuses.SUCCESS_CONFIRMED;
     }
 }

@@ -22,10 +22,10 @@ public class CardsService {
         Operation operation;
         if (cardsRepository.hasCard(cardId)) {
             Card card = cardsRepository.getCardById(cardId);
-            operation = new Operation(OperationTypes.GET_CARD, card).setOperationStatus(OperationStatuses.SUCCESS);
+            operation = new Operation(OperationTypes.GET_CARD, card.getDto(), OperationStatuses.SUCCESS);
             operationsRepository.addOperation(operation);
         } else {
-            operation = new Operation(OperationTypes.GET_CARD).setOperationStatus(OperationStatuses.FAIL);
+            operation = new Operation(OperationTypes.GET_CARD, OperationStatuses.FAIL);
             operationsRepository.addOperation(operation);
             throw new CardException("Card not found: " + cardId, operation, HttpStatus.NOT_FOUND);
         }
@@ -36,10 +36,10 @@ public class CardsService {
         Operation operation;
         if (!cardsRepository.getCards().containsKey(card.getCardId())) {
             cardsRepository.addCard(card);
-            operation = new Operation(OperationTypes.ADD_CARD, card).setOperationStatus(OperationStatuses.SUCCESS);
+            operation = new Operation(OperationTypes.ADD_CARD, card.getDto(), OperationStatuses.SUCCESS);
             operationsRepository.addOperation(operation);
         } else {
-            operation = new Operation(OperationTypes.ADD_CARD, card).setOperationStatus(OperationStatuses.FAIL);
+            operation = new Operation(OperationTypes.ADD_CARD, card.getDto(), OperationStatuses.FAIL);
             operationsRepository.addOperation(operation);
             throw new UserAlreadyRegisteredException("User already Registered", operation, HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -51,12 +51,11 @@ public class CardsService {
         if (cardsRepository.hasCard(cardNumber)) {
             Card card = cardsRepository.getCardById(cardNumber);
             card.addBalance(amount.getValue());
-            operation = new Operation(OperationTypes.ADD_BALANCE, card)
-                    .setOperationStatus(OperationStatuses.SUCCESS);
+            operation = new Operation(OperationTypes.ADD_BALANCE, card.getDto(), OperationStatuses.SUCCESS);
 
             operationsRepository.addOperation(operation);
         } else {
-            operation = new Operation(OperationTypes.ADD_BALANCE).setOperationStatus(OperationStatuses.FAIL);
+            operation = new Operation(OperationTypes.ADD_BALANCE, OperationStatuses.FAIL);
             operationsRepository.addOperation(operation);
             throw new CardException("Card not found: " + cardNumber, operation, HttpStatus.NOT_FOUND);
         }

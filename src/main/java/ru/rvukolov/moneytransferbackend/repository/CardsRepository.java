@@ -34,12 +34,13 @@ public class CardsRepository {
         cards.get(cardId).addBalance(amount);
     }
 
-    public Card checkCardExists(String cardId, Operation operation) {
+    public Card checkCardExists(String cardId, TransferRequest request) {
         //TODO: вынести исключение в сервис
         if (cards.containsKey(cardId)) {
             return cards.get(cardId);
         } else {
-            throw new CardException("Card was not found: " + cardId, operation.setOperationStatus(OperationStatuses.FAIL), HttpStatus.NOT_FOUND);
+            throw new CardException("Card was not found: " + cardId,
+                    new Operation(OperationTypes.TRANSFER, OperationStatuses.FAIL, request), HttpStatus.NOT_FOUND);
         }
     }
 

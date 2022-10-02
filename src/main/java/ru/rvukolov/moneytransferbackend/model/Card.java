@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Required;
+import ru.rvukolov.moneytransferbackend.model.out.CardDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -13,9 +15,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Card {
     @Size(min = 16)
+    @NotBlank
     private String cardId;
+    @NotBlank
     private String validTill;
     @Size(min = 3, max = 3)
+    @NotBlank
     private String cardCVV;
     @NotBlank
     private String name;
@@ -31,7 +36,6 @@ public class Card {
         this.name = name;
         this.surname = surname;
     }
-
 
     public String getCardId() {
         return cardId;
@@ -54,7 +58,7 @@ public class Card {
     }
 
     public double getBalance() {
-        return balance;
+        return balance - reservedBalance.entrySet().stream().mapToDouble(s -> s.getValue()).sum();
     }
 
     public void addBalance(double balance) {
@@ -69,7 +73,15 @@ public class Card {
     }
 
     public void reserveSpendBalance(UUID operationId, double amount) {
-        this.reservedBalance.put(operationId, amount);
+        reservedBalance.put(operationId, amount);
+    }
+
+    public void deleteReservedBalance(UUID operationId) {
+        reservedBalance.remove(operationId);
+    }
+
+    public CardDto getDto() {
+        return new CardDto(this);
     }
 
 }

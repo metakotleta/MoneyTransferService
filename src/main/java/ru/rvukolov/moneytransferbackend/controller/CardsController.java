@@ -2,14 +2,14 @@ package ru.rvukolov.moneytransferbackend.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.rvukolov.moneytransferbackend.exceptions.AApplicationException;
 import ru.rvukolov.moneytransferbackend.exceptions.UserAlreadyRegisteredException;
-import ru.rvukolov.moneytransferbackend.model.*;
-import ru.rvukolov.moneytransferbackend.model.out.CardDto;
+import ru.rvukolov.moneytransferbackend.model.Amount;
+import ru.rvukolov.moneytransferbackend.model.Card;
+import ru.rvukolov.moneytransferbackend.model.Operation;
+import ru.rvukolov.moneytransferbackend.model.OperationTypes;
 import ru.rvukolov.moneytransferbackend.model.out.Response;
 import ru.rvukolov.moneytransferbackend.model.out.ValidationError;
 import ru.rvukolov.moneytransferbackend.service.CardsService;
@@ -17,9 +17,9 @@ import ru.rvukolov.moneytransferbackend.service.OperationsService;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/cards")
 public class CardsController {
@@ -37,8 +37,8 @@ public class CardsController {
     @GetMapping("/{cardId}")
     public Response getCardById(@PathVariable String cardId) {
         var operation = cardsService.getCardById(cardId);
-        var cardDto = operation.getCard();
-        return new Response(operation, cardDto);
+        var card = operation.getCard();
+        return new Response(operation, card);
     }
 
     @PostMapping("/register")
@@ -50,8 +50,8 @@ public class CardsController {
     @PostMapping("/{cardId}/topUp")
     public Response topUpBalance(@PathVariable String cardId, @RequestBody @Valid Amount amount) {
         var operation = cardsService.addBalance(cardId, amount);
-        var cardDto = operation.getCard();
-        return new Response(operation, cardDto);
+        var card = operation.getCard();
+        return new Response(operation, card);
     }
 
     @ExceptionHandler(AApplicationException.class)
@@ -61,12 +61,13 @@ public class CardsController {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    Response handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    Response handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletResponse response) {
         var operation = new Operation(OperationTypes.ERROR);
         operationsService.addOperation(operation);
         var error = new ValidationError()
                 .setErrorMethodNames(e.getParameter().getMethod().getAnnotation(PostMapping.class).value())
                 .setInvalidFields(e.getBindingResult().getFieldErrors().stream().map(er -> er.getField()).collect(Collectors.toList()));
+        response.setStatus(500);
         return new Response(operation).setValidationError(error);
     }
 }

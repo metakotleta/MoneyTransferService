@@ -8,9 +8,11 @@ import ru.rvukolov.moneytransferbackend.model.*;
 import ru.rvukolov.moneytransferbackend.repository.CardsRepository;
 import ru.rvukolov.moneytransferbackend.repository.OperationsRepository;
 
+import java.time.Instant;
+
 @Service
 public class MoneyTransferService {
-
+    public static final String CODE = "0000";
     private OperationsRepository operationsRepository;
     private CardsRepository cardsRepository;
 
@@ -19,40 +21,62 @@ public class MoneyTransferService {
         this.cardsRepository = cardsRepository;
     }
 
+    //только резервируем баланс
     public Operation transfer(TransferRequest request) {
-        Operation operation = new Operation(OperationTypes.TRANSFER);
-        Card senderCard = cardsRepository.checkCardExists(request.getCardFromNumber(), operation);
         double amount = request.getAmount().getValue();
-        if (cardsRepository.checkSenderCard(senderCard,request)) {
+        var operation = new Operation(OperationTypes.TRANSFER, OperationStatuses.CONFIRMATION_WAIT, request);
+        Card senderCard = cardsRepository.checkCardExists(request.getCardFromNumber(), request);
+        cardsRepository.checkCardExists(request.getCardToNumber(), request);
+        if (cardsRepository.checkSenderCard(senderCard, request)) {
             senderCard.reserveSpendBalance(operation.getOperationId(), amount);
-            operation.setOperationStatus(OperationStatuses.CONFIRMATION_WAIT).setRequest(request);
             operationsRepository.addOperation(operation);
+            return operation;
         } else {
-            operation.setOperationStatus(OperationStatuses.FAIL).setRequest(request);
-            operationsRepository.addOperation(operation);
-            throw new CardException("Incorrect card data:" + request.getCardFromNumber(), operation, HttpStatus.NOT_FOUND);
+            var operationFail = new Operation(OperationTypes.TRANSFER, OperationStatuses.FAIL, request);
+            operationsRepository.addOperation(operationFail);
+            throw new CardException("Incorrect card data:" + request.getCardFromNumber(), operationFail, HttpStatus.NOT_FOUND);
         }
-        return operation;
     }
 
+    //перевод резервированного баланса в случае успеха
     public Operation confirmOperation(Confirm confirm) {
-        //TODO: добавить ДТО для корректной передачи в /operations (менять статус и тип исходной операции
-        var operation = new ConfirmOperation(OperationTypes.TRANSFER_CONFIRM);
-        if (operationsRepository.containOperation(confirm.getOperationId())) {
-            Operation transferOperation = operationsRepository.getOperationById(confirm.getOperationId());
-            Card senderCard = cardsRepository.getCardById(transferOperation.getRequest().getCardFromNumber());
+        var id = confirm.getOperationId();
+        Operation transferOperation = operationsRepository.getOperationById(confirm.getOperationId());
+        var confirmOperation = new Operation(OperationTypes.CONFIRM_TRANSFER);
+        if (!operationsRepository.containOperation(id)) {
+            confirmOperation.setOperationStatus(OperationStatuses.FAIL);
+            operationsRepository.addOperation(confirmOperation);
+            throw new OperationException("Operation not found.", confirmOperation, HttpStatus.NOT_FOUND);
+        } else if (!operationsRepository.isNotConfirmedOperation(id)) {
+            confirmOperation.setOperationStatus(OperationStatuses.FAIL);
+            operationsRepository.addOperation(confirmOperation);
+            throw new OperationException("Operation already confirmed.", confirmOperation, HttpStatus.NOT_FOUND);
+        } else if (confirm.getCode().equals(CODE)) {
+            TransferRequest request = transferOperation.getRequest();
+            Card senderCard = cardsRepository.getCardById(request.getCardFromNumber());
             Card receiverCard = cardsRepository.getCardById(transferOperation.getRequest().getCardToNumber());
-            double spendAmount = senderCard.getReservedBalance().get(transferOperation.getOperationId());
-            senderCard.spendBalance(spendAmount);
-            receiverCard.addBalance(spendAmount);
-            operation.setConfirmedOperation(transferOperation);
-            operationsRepository.addOperation(operation);
+            synchronized (this) {
+                try {
+                    double spendAmount = senderCard.getReservedBalance().get(transferOperation.getOperationId());
+                    senderCard.deleteReservedBalance(transferOperation.getOperationId());
+                    senderCard.spendBalance(spendAmount);
+                    receiverCard.addBalance(spendAmount);
+                } catch (Exception e) {
+                    transferOperation.setOperationStatus(OperationStatuses.FAIL);
+                    confirmOperation.setOperationStatus(OperationStatuses.FAIL);
+                    operationsRepository.addOperation(confirmOperation);
+                    throw new OperationException("Operation failed", confirmOperation, HttpStatus.INTERNAL_SERVER_ERROR);
+                } finally {
+                    senderCard.deleteReservedBalance(transferOperation.getOperationId());
+                }
+            }
+            confirmOperation.setOperationStatus(OperationStatuses.SUCCESS);
+            transferOperation.setOperationStatus(OperationStatuses.SUCCESS_CONFIRMED);
+            operationsRepository.addOperation(confirmOperation);
+            return confirmOperation;
         } else {
-            operation.setOperationStatus(OperationStatuses.FAIL);
-            operationsRepository.addOperation(operation);
-            throw new OperationException("Operation not found.", operation, HttpStatus.NOT_FOUND);
+            confirmOperation.setOperationStatus(OperationStatuses.FAIL);
+            throw new OperationException("Confirmation code incorrect", confirmOperation, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return operation;
     }
-
 }

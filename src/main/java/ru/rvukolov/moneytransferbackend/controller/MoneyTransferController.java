@@ -1,6 +1,5 @@
 package ru.rvukolov.moneytransferbackend.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.rvukolov.moneytransferbackend.exceptions.AApplicationException;
 import ru.rvukolov.moneytransferbackend.model.Confirm;
@@ -19,6 +18,7 @@ public class MoneyTransferController {
     public MoneyTransferController(MoneyTransferService moneyTransferService) {
         this.moneyTransferService = moneyTransferService;
     }
+
     @PostMapping("/transfer")
     public Operation transfer(@RequestBody TransferRequest request) {
         return moneyTransferService.transfer(request);

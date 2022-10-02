@@ -14,6 +14,12 @@ public abstract class AApplicationException extends RuntimeException {
         this.status = status;
     }
 
+    public AApplicationException(String message, Operation operation, HttpStatus status, Throwable e) {
+        super(message, e);
+        response = new Response(operation).setMessage(message);
+        this.status = status;
+    }
+
     public Response getResponse() {
         return response;
     }
