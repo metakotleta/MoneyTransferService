@@ -8,8 +8,6 @@ import ru.rvukolov.moneytransferbackend.model.*;
 import ru.rvukolov.moneytransferbackend.repository.CardsRepository;
 import ru.rvukolov.moneytransferbackend.repository.OperationsRepository;
 
-import java.time.Instant;
-
 @Service
 public class MoneyTransferService {
     public static final String CODE = "0000";

@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 @RestController
 @RequestMapping("/cards")
-public class CardsController {
+public class    CardsController {
 
     private Logger log = LoggerFactory.getLogger(CardsController.class);
     private CardsService cardsService;
