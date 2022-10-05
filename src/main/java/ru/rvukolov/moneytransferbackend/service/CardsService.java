@@ -34,7 +34,7 @@ public class CardsService {
 
     public Operation addCard(Card card) {
         Operation operation;
-        if (!cardsRepository.getCards().containsKey(card.getCardId())) {
+        if (!cardsRepository.hasCard(card.getCardId())) {
             cardsRepository.addCard(card);
             operation = new Operation(OperationTypes.ADD_CARD, card.getDto(), OperationStatuses.SUCCESS);
             operationsRepository.addOperation(operation);
